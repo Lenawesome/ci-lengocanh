@@ -1,13 +1,11 @@
 package touhou;
 
-import tklibs.SpriteUtils;
-import touhou.bases.Constraints;
-import touhou.bases.FrameCounter;
-import touhou.enemies.Enemy;
+import bases.GameObject;
+import bases.Constraints;
+import touhou.background.Background;
 import touhou.enemies.EnemySpawner;
 import touhou.inputs.InputManager;
 import touhou.players.Player;
-import touhou.players.PlayerSpell;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -15,10 +13,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Random;
-
-import static java.awt.event.KeyEvent.*;
 
 //https://github.com/qhuydtvt/ci1-huynq
 
@@ -34,32 +28,38 @@ public class GameWindow extends Frame {
     private BufferedImage backbufferImage;
     private Graphics2D backbufferGraphics;
 
-    private BufferedImage background;
 
+    Background background = new Background();
     Player player = new Player();
-    ArrayList<PlayerSpell> playerSpells = new ArrayList<>();
-
-    ArrayList<Enemy> enemies = new ArrayList<>();
     EnemySpawner enemySpawner = new EnemySpawner();
-
     InputManager inputManager = new InputManager();
 
     public GameWindow() {
         pack();
-        background = SpriteUtils.loadImage("assets/images/background/0.png");
 
-        player.setInputManager(this.inputManager);
-        player.setContraints(new Constraints(getInsets().top, 768, getInsets().left, 384));
-        player.playerSpells = this.playerSpells;
-
-//        enemies.add(new Enemy());
-        Enemy enemy = new Enemy();
-        enemy.getPosition().set(40, 40);
-
-        enemies.add(enemy);
+        addBackground();
+        addPlayer();
+        enemySpawn();
 
         setupGameLoop();
         setupWindow();
+    }
+
+    private void addBackground() {
+        background.getPosition().set(384 / 2, -800);
+        GameObject.add(background);
+    }
+
+    private void enemySpawn() {
+        GameObject.add(enemySpawner);
+    }
+
+    private void addPlayer() {
+        player.setInputManager(this.inputManager);
+        player.setContraints(new Constraints(getInsets().top, 768, getInsets().left, 384));
+        player.getPosition().set(384 / 2, 600);
+
+        GameObject.add(player);
     }
 
     private void setupGameLoop() {
@@ -116,33 +116,15 @@ public class GameWindow extends Frame {
     }
 
     private void run() {
-        player.run();
-
-        for (PlayerSpell playerSpell : playerSpells) {
-            playerSpell.run();
-        }
-
-        for (Enemy enemy : enemies) {
-            enemy.run();
-        }
-
-        enemySpawner.spawn(enemies);
+        GameObject.runAll();
     }
 
     @Override
     public void update(Graphics g) {
         backbufferGraphics.setColor(Color.black);
         backbufferGraphics.fillRect(0, 0, 1024, 768);
-        backbufferGraphics.drawImage(background, 0, 0, null);
-        player.render(backbufferGraphics);
 
-        for (PlayerSpell playerSpell: playerSpells) {
-            playerSpell.render(backbufferGraphics);
-        }
-
-        for(Enemy enemy : enemies) {
-            enemy.render(backbufferGraphics);
-        }
+       GameObject.renderAll(backbufferGraphics);
 
         g.drawImage(backbufferImage, 0, 0, null);
     }

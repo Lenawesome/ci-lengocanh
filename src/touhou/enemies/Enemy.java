@@ -1,42 +1,41 @@
 package touhou.enemies;
 
+import bases.FrameCounter;
+import bases.GameObject;
 import tklibs.SpriteUtils;
-import touhou.bases.Vector2D;
-import touhou.bases.renderers.ImageRenderer;
+import bases.Vector2D;
+import bases.renderers.ImageRenderer;
+import java.util.Vector;
 
 import java.awt.*;
 
 /**
  * Created by huynq on 8/9/17.
  */
-public class Enemy {
-    private static final float SPEED = 3;
-
-    private Vector2D position;
-    private ImageRenderer renderer;
+public class Enemy extends GameObject {
+    private static final float SPEED = 2;
+    private FrameCounter frameCounter;
 
     public Enemy() {
-        position = new Vector2D();
+        super();
         renderer = new ImageRenderer(SpriteUtils.loadImage("assets/images/enemies/level0/blue/0.png"));
-    }
-
-    // View
-    public void render(Graphics2D g2d) {
-        renderer.render(g2d, position);
-    }
-
-    public Vector2D getPosition() {
-        return position;
+        frameCounter = new FrameCounter(30);
     }
 
     // Controller
     public void run() {
+        super.run();
         fly();
         shoot();
     }
 
     private void shoot() {
-        // TODO: create enemy bullet and shoot
+        if(frameCounter.run()) {
+            frameCounter.reset();
+            EnemySpell newSpell = new EnemySpell();
+            newSpell.getPosition().set(this.position.add(0, 20));
+            GameObject.add(newSpell);
+        }
     }
 
     private void fly() {
