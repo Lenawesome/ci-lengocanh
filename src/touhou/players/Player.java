@@ -1,6 +1,9 @@
 package touhou.players;
 
 import bases.GameObject;
+import bases.Vector2D;
+import bases.physics.BoxColider;
+import bases.physics.PhysicsBody;
 import tklibs.SpriteUtils;
 import bases.Constraints;
 import bases.FrameCounter;
@@ -14,10 +17,11 @@ import java.util.Vector;
 /**
  * Created by huynq on 8/2/17.
  */
-public class Player extends GameObject{
+public class Player extends GameObject implements PhysicsBody{
     private static final int SPEED = 5;
     private InputManager inputManager;
     private Constraints constraints;
+    private BoxColider boxColider;
 
 
     private FrameCounter coolDownCounter;
@@ -25,6 +29,8 @@ public class Player extends GameObject{
 
     public Player() {
         super();
+        this.boxColider = new BoxColider(10,10);
+        this.children.add(boxColider);
         this.spellLock = false;
         BufferedImage image = SpriteUtils.loadImage("assets/images/players/straight/0.png");
         this.renderer = new ImageRenderer(image);
@@ -36,7 +42,8 @@ public class Player extends GameObject{
     }
 
 
-    public void run() {
+    public void run(Vector2D parentPosition) {
+        super.run(parentPosition);
         if (inputManager.upPressed)
             position.addUp(0, -SPEED);
         if (inputManager.downPressed)
@@ -58,7 +65,6 @@ public class Player extends GameObject{
             PlayerSpell newSpell = new PlayerSpell();
             newSpell.getPosition().set(this.position.add(0, -30));
             GameObject.add(newSpell);
-
             spellLock = true;
             coolDownCounter.reset();
         }
@@ -77,5 +83,10 @@ public class Player extends GameObject{
 
     public void setInputManager(InputManager inputManager) {
         this.inputManager = inputManager;
+    }
+
+    @Override
+    public BoxColider getBoxColider() {
+        return boxColider;
     }
 }
