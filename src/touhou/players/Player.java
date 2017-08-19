@@ -5,11 +5,13 @@ import bases.Vector2D;
 import bases.physics.BoxColider;
 import bases.physics.PhysicsBody;
 import bases.pools.GameObjectPool;
+import javafx.scene.shape.Sphere;
 import tklibs.SpriteUtils;
 import bases.Constraints;
 import bases.FrameCounter;
 import bases.renderers.ImageRenderer;
 import touhou.inputs.InputManager;
+import touhou.players.spheres.PlayerSphere;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -36,6 +38,20 @@ public class Player extends GameObject implements PhysicsBody{
         BufferedImage image = SpriteUtils.loadImage("assets/images/players/straight/0.png");
         this.renderer = new ImageRenderer(image);
         this.coolDownCounter = new FrameCounter(3);
+        addSpheres();
+    }
+
+    private void addSpheres() {
+        PlayerSphere leftSphere = new PlayerSphere();
+        leftSphere.getPosition().set(-20, 0);
+
+        PlayerSphere righSphere = new PlayerSphere();
+        righSphere.getPosition().set(20, 0);
+        righSphere.setReverse(true);
+
+
+        this.children.add(leftSphere);
+        this.children.add(righSphere);
     }
 
     public void setContraints(Constraints contraints) {

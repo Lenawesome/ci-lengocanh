@@ -14,15 +14,17 @@ public class Animation implements Renderer{
     private List<BufferedImage> images;
     private FrameCounter frameCounter;
     private int currentImageIndex;
+    private boolean reverse;
 
-    public Animation(int frameDelay, BufferedImage ... images){
+    public Animation(int frameDelay,boolean reverse, BufferedImage ... images){
         this.images = java.util.Arrays.asList(images);
         this.frameCounter = new FrameCounter(frameDelay);
         this.currentImageIndex = 0;
+        this.reverse = reverse;
     }
 
     public Animation(BufferedImage ... images){
-        this(12, images);
+        this(12, false, images);
     }
 
     @Override
@@ -31,12 +33,27 @@ public class Animation implements Renderer{
         Vector2D renderPosition = position.subtract(image.getWidth() / 2, image.getHeight() / 2);
         g2d.drawImage(image,(int)renderPosition.x, (int)renderPosition.y, null );
 
+        updateCurrentImage();
+        }
+
+    private void updateCurrentImage() {
         if(frameCounter.run()){
             frameCounter.reset();
-            currentImageIndex++;
-            if(currentImageIndex >= images.size()){
-                currentImageIndex = 0;
+            if(!reverse) {
+                currentImageIndex++;
+                if (currentImageIndex >= images.size()) {
+                    currentImageIndex = 0;
+                }
+            } else{
+                currentImageIndex --;
+                if (currentImageIndex < 0 ) {
+                    currentImageIndex = images.size() - 1;
+                }
             }
         }
+    }
+
+    public void setReverse(boolean reverse) {
+        this.reverse = reverse;
     }
 }
