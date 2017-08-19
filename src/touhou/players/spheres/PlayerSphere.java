@@ -32,8 +32,8 @@ public class PlayerSphere extends GameObject implements PhysicsBody {
     }
 
     @Override
-    public void run(Vector2D parenPosition){
-        super.run(parenPosition);
+    public void run(Vector2D parentPosition){
+        super.run(parentPosition);
         shoot();
     }
 
@@ -41,7 +41,6 @@ public class PlayerSphere extends GameObject implements PhysicsBody {
         if(coolDown.run()) {
             SphereBullet newBullet = GameObjectPool.recycle(SphereBullet.class);
             newBullet.getPosition().set(this.screenPosition.add(0, 10));
-            GameObject.add(newBullet);
             coolDown.reset();
         }
     }

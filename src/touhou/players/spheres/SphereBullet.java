@@ -31,7 +31,7 @@ public class SphereBullet extends GameObject implements PhysicsBody{
     @Override
     public void run(Vector2D parenPosition){
         super.run(parenPosition);
-        position.addUp(0,-5);
+        this.position.addUp(0,-5);
         hitEnemy();
         deactiveIfNeeded();
     }
