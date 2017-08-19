@@ -71,4 +71,12 @@ public class Vector2D {
                 ", y=" + y +
                 '}';
     }
+
+    public Vector2D subtract(float dx, float dy) {
+        return  new Vector2D(x - dx, y- dy);
+    }
+
+    public Vector2D subtract(Vector2D other){
+        return subtract(other.x, other.y);
+    }
 }

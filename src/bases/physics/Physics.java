@@ -9,24 +9,15 @@ import java.util.Vector;
 public class Physics {
     private static Vector<PhysicsBody> bodies = new Vector<>();
 
-    public static Enemy colideWithEnemy(BoxColider boxColider){
+    public static <T extends PhysicsBody> T colideWith(BoxColider boxColider, Class <T> classz){
         for(PhysicsBody body : bodies){
             if(body.isActive())
-                 if(body instanceof Enemy && body.getBoxColider().intersects(boxColider) )
-                     return (Enemy) body;
+                 if(body.getClass().equals(classz) && body.getBoxColider().intersects(boxColider) )
+                     return (T) body;
         }
         return null;
     }
 
-
-    public static Player colideWithPlayer(BoxColider boxColider){
-        for(PhysicsBody body : bodies){
-            if(body.isActive())
-                if(body instanceof Player && body.getBoxColider().intersects(boxColider))
-                    return (Player) body;
-        }
-        return null;
-    }
 
     public static void add(PhysicsBody body) {
         bodies.add(body);

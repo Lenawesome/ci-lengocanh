@@ -9,8 +9,6 @@ import bases.Vector2D;
 import bases.renderers.ImageRenderer;
 import touhou.enemies.Enemy;
 
-import java.awt.*;
-
 /**
  * Created by huynq on 8/2/17.
  */
@@ -30,6 +28,12 @@ public class PlayerSpell extends GameObject implements PhysicsBody {
         super.run(parentPosition);
         position.addUp(0, -10);
         hitEnemy();
+        deativeIfNeeded();
+    }
+
+    private void deativeIfNeeded() {
+        if(this.screenPosition.y < 0)
+            this.isActive = false;
     }
 
     @Override
@@ -38,7 +42,8 @@ public class PlayerSpell extends GameObject implements PhysicsBody {
     }
 
     private void hitEnemy(){
-        Enemy enemy = Physics.colideWithEnemy(this.boxColider);
+//        Enemy enemy = Physics.colideWith(this.boxColider);
+        Enemy enemy = Physics.colideWith(this.boxColider, Enemy.class);
             if(enemy != null){
                 enemy.setActive(false);
                 this.isActive = false;

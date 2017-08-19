@@ -16,7 +16,7 @@ public class EnemySpell extends GameObject implements PhysicsBody{
         super();
         this.boxColider = new BoxColider(20,20);
         this.children.add(boxColider);
-        renderer = new ImageRenderer(SpriteUtils.loadImage("assets/images/enemies/bullets/blue.png"));
+        this.renderer = new ImageRenderer(SpriteUtils.loadImage("assets/images/enemies/bullets/blue.png"));
     }
 
     public void run(Vector2D parentPosition){
@@ -26,7 +26,7 @@ public class EnemySpell extends GameObject implements PhysicsBody{
     }
 
     private void hitPlayer() {
-        Player player = Physics.colideWithPlayer(this.boxColider);
+        Player player = Physics.colideWith(this.boxColider, Player.class);
         if(player != null) {
             player.setActive(false);
             this.isActive = false;
