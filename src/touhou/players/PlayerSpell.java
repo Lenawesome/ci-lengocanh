@@ -16,12 +16,13 @@ import touhou.enemies.Enemy;
  */
 public class PlayerSpell extends GameObject implements PhysicsBody {
     private BoxColider boxColider;
-    private FrameCounter frameCounter;
+    private int damage = 1;
 
     public PlayerSpell() {
         super();
         renderer = new Animation(
                 10,
+                false,
                 false,
                 SpriteUtils.loadImage("assets/images/player-spells/a/0.png"),
                 SpriteUtils.loadImage("assets/images/player-spells/a/1.png"),
@@ -53,8 +54,9 @@ public class PlayerSpell extends GameObject implements PhysicsBody {
 //        Enemy enemy = Physics.colideWith(this.boxColider);
         Enemy enemy = Physics.colideWith(this.boxColider, Enemy.class);
             if(enemy != null){
-                enemy.setActive(false);
+                enemy.getHit(damage);
                 this.isActive = false;
             }
       }
+
 }

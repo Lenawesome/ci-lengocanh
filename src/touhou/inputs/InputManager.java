@@ -14,6 +14,8 @@ public class InputManager {
     public boolean rightPressed;
     public boolean xPressed;
 
+    public static final InputManager instance = new InputManager();
+
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
             case VK_RIGHT:

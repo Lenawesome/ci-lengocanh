@@ -19,6 +19,7 @@ public class SphereBullet extends GameObject implements PhysicsBody{
         renderer = new Animation(
                 10,
                 false,
+                false,
                 SpriteUtils.loadImage("assets/images/sphere-bullets/0.png"),
                 SpriteUtils.loadImage("assets/images/sphere-bullets/1.png"),
                 SpriteUtils.loadImage("assets/images/sphere-bullets/2.png"),
@@ -29,8 +30,8 @@ public class SphereBullet extends GameObject implements PhysicsBody{
     }
 
     @Override
-    public void run(Vector2D parenPosition){
-        super.run(parenPosition);
+    public void run(Vector2D parentPosition){
+        super.run(parentPosition);
         this.position.addUp(0,-5);
         hitEnemy();
         deactiveIfNeeded();

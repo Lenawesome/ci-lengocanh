@@ -25,7 +25,10 @@ public class Player extends GameObject implements PhysicsBody{
     private InputManager inputManager;
     private Constraints constraints;
     private BoxColider boxColider;
+    private int health = 10;
 
+    private Vector2D velocity;
+    private PlayerAnimator playerAnimator;
 
     private FrameCounter coolDownCounter;
     private boolean spellLock;
@@ -33,11 +36,12 @@ public class Player extends GameObject implements PhysicsBody{
     public Player() {
         super();
         this.boxColider = new BoxColider(10,10);
+        this.playerAnimator = new PlayerAnimator();
+        this.renderer = playerAnimator;
         this.children.add(boxColider);
         this.spellLock = false;
-        BufferedImage image = SpriteUtils.loadImage("assets/images/players/straight/0.png");
-        this.renderer = new ImageRenderer(image);
         this.coolDownCounter = new FrameCounter(3);
+        this.velocity = new Vector2D();
         addSpheres();
     }
 
@@ -61,19 +65,23 @@ public class Player extends GameObject implements PhysicsBody{
 
     public void run(Vector2D parentPosition) {
         super.run(parentPosition);
-        if (inputManager.upPressed)
-            position.addUp(0, -SPEED);
-        if (inputManager.downPressed)
-            position.addUp(0, SPEED);
-        if (inputManager.leftPressed)
-            position.addUp(-SPEED, 0);
-        if (inputManager.rightPressed)
-            position.addUp(SPEED, 0);
 
+        velocity.set(0,0);
+
+        if (inputManager.upPressed)
+           velocity.y -= SPEED;
+        if (inputManager.downPressed)
+            velocity.y += SPEED;
+        if (inputManager.leftPressed)
+            velocity.x -= SPEED;
+        if (inputManager.rightPressed)
+            velocity.x += SPEED;
         if (constraints != null) {
             constraints.make(position);
         }
 
+        position.addUp(velocity);
+        playerAnimator.update(this);
         castSpell();
     }
 
@@ -96,6 +104,18 @@ public class Player extends GameObject implements PhysicsBody{
         }
     }
 
+    public void gethit(int damage){
+        health -= damage;
+        if(health <= 0){
+            this.isActive = false;
+            PlayerExplosion explosion = GameObjectPool.recycle(PlayerExplosion.class);
+            explosion.getPosition().set(this.position);
+        }
+    }
+
+    public Vector2D getVelocity() {
+        return velocity;
+    }
 
     public void setInputManager(InputManager inputManager) {
         this.inputManager = inputManager;

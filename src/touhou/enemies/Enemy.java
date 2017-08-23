@@ -5,6 +5,7 @@ import bases.GameObject;
 import bases.physics.BoxColider;
 import bases.physics.Physics;
 import bases.physics.PhysicsBody;
+import bases.pools.GameObjectPool;
 import bases.renderers.Animation;
 import tklibs.SpriteUtils;
 import bases.Vector2D;
@@ -22,9 +23,10 @@ import java.awt.*;
  * Created by huynq on 8/9/17.
  */
 public class Enemy extends GameObject implements PhysicsBody {
-    private static final float SPEED = 3;
+    private int SPEED = 2;
     private FrameCounter frameCounter;
     private BoxColider boxColider;
+    private int health = 3;
 
     public Enemy() {
         super();
@@ -39,6 +41,21 @@ public class Enemy extends GameObject implements PhysicsBody {
         this.children.add(boxColider);
     }
 
+    public Enemy(int newSPEED ){
+        super();
+        this.SPEED = newSPEED;
+        renderer = new Animation(
+                SpriteUtils.loadImage("assets/images/enemies/level0/black/0.png"),
+                SpriteUtils.loadImage("assets/images/enemies/level0/black/2.png"),
+                SpriteUtils.loadImage("assets/images/enemies/level0/black/4.png"),
+                SpriteUtils.loadImage("assets/images/enemies/level0/black/6.png"),
+                SpriteUtils.loadImage("assets/images/enemies/level0/black/8.png")
+        );
+        frameCounter = new FrameCounter(30);
+        boxColider = new BoxColider(20,20);
+        this.children.add(boxColider);
+    }
+
     // Controller
     public void run(Vector2D parentPosition) {
         super.run(parentPosition);
@@ -49,9 +66,8 @@ public class Enemy extends GameObject implements PhysicsBody {
     private void shoot() {
         if(frameCounter.run()) {
             frameCounter.reset();
-            EnemySpell newSpell = new EnemySpell();
+            EnemySpell newSpell = GameObjectPool.recycle(EnemySpell.class);
             newSpell.getPosition().set(this.position.add(0, 20));
-            GameObject.add(newSpell);
         }
     }
 
@@ -71,5 +87,15 @@ public class Enemy extends GameObject implements PhysicsBody {
     @Override
     public BoxColider getBoxColider() {
         return this.boxColider;
+    }
+
+    public void getHit(int damage) {
+        //TODO: decrease HP
+        health -= damage;
+        if(health <= 0) {
+            this.setActive(false);
+            EnemyExplosion explosion = GameObjectPool.recycle(EnemyExplosion.class);
+            explosion.getPosition().set(this.position);
+        }
     }
 }

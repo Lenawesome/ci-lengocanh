@@ -15,26 +15,39 @@ public class Animation implements Renderer{
     private FrameCounter frameCounter;
     private int currentImageIndex;
     private boolean reverse;
+    private boolean oneTime;
+    private boolean stopped;
 
-    public Animation(int frameDelay,boolean reverse, BufferedImage ... images){
+    public Animation(int frameDelay,boolean oneTime, boolean reverse, BufferedImage ... images){
         this.images = java.util.Arrays.asList(images);
         this.frameCounter = new FrameCounter(frameDelay);
         this.currentImageIndex = 0;
         this.reverse = reverse;
+        this.oneTime = oneTime;
+    }
+
+    public void reset(){
+        stopped = false;
+        currentImageIndex = 0;
+    }
+    public boolean isStopped() {
+        return stopped;
     }
 
     public Animation(BufferedImage ... images){
-        this(12, false, images);
+        this(12, false,false, images);
     }
 
     @Override
     public void render(Graphics2D g2d, Vector2D position) {
-        BufferedImage image = images.get(currentImageIndex);
-        Vector2D renderPosition = position.subtract(image.getWidth() / 2, image.getHeight() / 2);
-        g2d.drawImage(image,(int)renderPosition.x, (int)renderPosition.y, null );
+        if(!stopped) {
+            BufferedImage image = images.get(currentImageIndex);
+            Vector2D renderPosition = position.subtract(image.getWidth() / 2, image.getHeight() / 2);
+            g2d.drawImage(image, (int) renderPosition.x, (int) renderPosition.y, null);
 
-        updateCurrentImage();
+            updateCurrentImage();
         }
+    }
 
     private void updateCurrentImage() {
         if(frameCounter.run()){
@@ -42,12 +55,22 @@ public class Animation implements Renderer{
             if(!reverse) {
                 currentImageIndex++;
                 if (currentImageIndex >= images.size()) {
-                    currentImageIndex = 0;
+                    // Out of range
+                    if (!oneTime)
+                        // Repeat an animation
+                        currentImageIndex = 0;
+                    else {
+                        stopped = true;
+                    }
                 }
             } else{
                 currentImageIndex --;
                 if (currentImageIndex < 0 ) {
-                    currentImageIndex = images.size() - 1;
+                    if(!oneTime)
+                        currentImageIndex = images.size() - 1;
+                    else{
+                        stopped = true;
+                    }
                 }
             }
         }

@@ -12,6 +12,7 @@ import touhou.players.Player;
 public class EnemySpell extends GameObject implements PhysicsBody{
     private static final int SPEED = 5;
     private BoxColider boxColider;
+    private int DAMAGE = 3;
     public EnemySpell(){
         super();
         this.boxColider = new BoxColider(20,20);
@@ -28,7 +29,7 @@ public class EnemySpell extends GameObject implements PhysicsBody{
     private void hitPlayer() {
         Player player = Physics.colideWith(this.boxColider, Player.class);
         if(player != null) {
-            player.setActive(false);
+            player.gethit(DAMAGE);
             this.isActive = false;
         }
     }

@@ -3,6 +3,8 @@ package touhou.enemies;
 import bases.FrameCounter;
 import bases.GameObject;
 import bases.Vector2D;
+import bases.pools.GameObjectPool;
+import touhou.scenes.Background;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -14,23 +16,38 @@ import java.util.Vector;
 public class EnemySpawner extends GameObject{
     private FrameCounter spawnCounter;
     private Random random;
+    private Background background;
 
     public EnemySpawner() {
         spawnCounter = new FrameCounter(70);
         random = new Random();
     }
 
-    public void run(Vector2D parentPosition){
-        super.run(parentPosition);
-        spawn();
+    @Override
+    public void run(Vector2D parenPosition) {
+        super.run(parenPosition);
+        if(!background.isStopped()){
+            spawnBlue();
+        }
+        else{
+            spawnBlack();
+        }
     }
 
-    public void spawn() {
+    public void setBackground(Background background) {
+        this.background = background;
+    }
+
+    public void spawnBlue() {
         if(spawnCounter.run()) {
-            spawnCounter.reset();
-            Enemy enemy = new Enemy();
-            enemy.getPosition().set(random.nextInt(384), 40);
-            GameObject.add(enemy);
+                spawnCounter.reset();
+                Enemy enemy = GameObjectPool.recycle(Enemy.class);
+                enemy.getPosition().set(random.nextInt(384),0);
         }
+    }
+    public void spawnBlack(){
+        Enemy enemy = new Enemy(0);
+        enemy.getPosition().set(256,60);
+        GameObject.add(enemy);
     }
 }

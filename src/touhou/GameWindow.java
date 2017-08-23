@@ -1,11 +1,9 @@
 package touhou;
 
 import bases.GameObject;
-import bases.Constraints;
-import touhou.background.Background;
-import touhou.enemies.EnemySpawner;
 import touhou.inputs.InputManager;
-import touhou.players.Player;
+import touhou.scenes.Level1Scene;
+import touhou.settings.Settings;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -25,42 +23,32 @@ public class GameWindow extends Frame {
     private long currentTime;
     private Graphics2D windowGraphics;
 
+    private BufferedImage blackBackground;
+
     private BufferedImage backbufferImage;
     private Graphics2D backbufferGraphics;
+    private Level1Scene level1Scene;
 
 
-    Background background = new Background();
-    Player player = new Player();
-    EnemySpawner enemySpawner = new EnemySpawner();
-    InputManager inputManager = new InputManager();
+    InputManager inputManager = InputManager.instance;
 
     public GameWindow() {
         pack();
-
-        addBackground();
-        addPlayer();
-        enemySpawn();
-
         setupGameLoop();
         setupWindow();
+        setupLevel();
     }
 
-    private void addBackground() {
-        background.getPosition().set(384 / 2, -800);
-        GameObject.add(background);
+    private void setupLevel() {
+        level1Scene = new Level1Scene();
+        level1Scene.init();
     }
 
-    private void enemySpawn() {
-        GameObject.add(enemySpawner);
-    }
 
-    private void addPlayer() {
-        player.setInputManager(this.inputManager);
-        player.setContraints(new Constraints(getInsets().top, 768, getInsets().left, 384));
-        player.getPosition().set(384 / 2, 600);
 
-        GameObject.add(player);
-    }
+
+
+
 
     private void setupGameLoop() {
         lastTimeUpdate = -1;
@@ -75,7 +63,13 @@ public class GameWindow extends Frame {
         this.backbufferImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
         this.backbufferGraphics = (Graphics2D) this.backbufferImage.getGraphics();
 
+        this.blackBackground = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_ARGB);
+
+
         this.windowGraphics = (Graphics2D) this.getGraphics();
+        Graphics2D backgroundGraphics = (Graphics2D) this.blackBackground.getGraphics();
+        backgroundGraphics.setColor(Color.BLACK);
+        backgroundGraphics.fillRect(0,0,this.getWidth(),this.getHeight());
 
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -99,6 +93,7 @@ public class GameWindow extends Frame {
                 inputManager.keyReleased(e);
             }
         });
+        Settings.instance.setWindowInsets(this.getInsets());
     }
 
     public void loop() {
@@ -119,18 +114,13 @@ public class GameWindow extends Frame {
         GameObject.runAll();
     }
 
-    @Override
-    public void update(Graphics g) {
-
-        g.drawImage(backbufferImage, 0, 0, null);
-    }
 
     private void render() {
-        backbufferGraphics.setColor(Color.black);
-        backbufferGraphics.fillRect(0, 0, 1024, 768);
+//        backbufferGraphics.setColor(Color.black);
+        backbufferGraphics.drawImage(blackBackground,0,0,null);
+//        backbufferGraphics.fillRect(0, 0, 1024, 768);
 
         GameObject.renderAll(backbufferGraphics);
-
-        repaint();
+        getGraphics().drawImage(backbufferImage,0,0,null);
     }
 }
